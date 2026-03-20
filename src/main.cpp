@@ -201,24 +201,24 @@ int calculateStepCount(double delta, float timewarp, bool forceVanilla) {
 		return std::round(std::max(1.0, ((delta * 60.0) / std::min(1.0f, timewarp)) * 4.0)); // not sure if this is different from `(delta * 240) / timewarp` bc of float precision
 	}
 	else if (legacyBypass) { // 2.1 physics bypass (same as vanilla 2.1)
-		return std::round(std::max(4.0, delta * 240.0) / std::min(1.0f, timewarp));
+		return std::round(std::max(4.0, delta * 360.0) / std::min(1.0f, timewarp));
 	}
 	else { // sorta just 2.2 + physics bypass but it doesnt allow below 240 steps/sec, also it smooths things out a bit when lagging
 		double animationInterval = CCDirector::sharedDirector()->getAnimationInterval();
-		averageDelta = (0.05 * delta) + (0.95 * averageDelta); // exponential moving average to detect lag/external fps caps
+		averageDelta = (0.01 * delta) + (0.99 * averageDelta); // exponential moving average to detect lag/external fps caps
 		if (averageDelta > animationInterval * 10) averageDelta = animationInterval * 10; // dont let averageDelta get too high
 
-		bool laggingOneFrame = animationInterval < delta - (1.0 / 240.0); // more than 1 step of lag on a single frame
-		bool laggingManyFrames = averageDelta - animationInterval > 0.0005; // average lag is >0.5ms
+		bool laggingOneFrame = animationInterval < delta - (1.0 / 360.0); // more than 1 step of lag on a single frame
+		bool laggingManyFrames = averageDelta - animationInterval > 0.0000001; // average lag is >0.5ms
 
 		if (!laggingOneFrame && !laggingManyFrames) { // no stepcount variance when not lagging
-			return std::round(std::ceil((animationInterval * 240.0) - 0.0001) / std::min(1.0f, timewarp));
+			return std::round(std::ceil((animationInterval * 360.0) - 0.0001) / std::min(1.0f, timewarp));
 		}
 		else if (!laggingOneFrame) { // consistently low fps
-			return std::round(std::ceil(averageDelta * 240.0) / std::min(1.0f, timewarp));
+			return std::round(std::ceil(averageDelta * 360.0) / std::min(1.0f, timewarp));
 		}
 		else { // need to catch up badly
-			return std::round(std::ceil(delta * 240.0) / std::min(1.0f, timewarp));
+			return std::round(std::ceil(delta * 360.0) / std::min(1.0f, timewarp));
 		}
 	}
 }
