@@ -514,8 +514,8 @@ class $modify(EndLevelLayer) {
 		if (!softToggle || physicsBypass) {
 			std::string text;
 
-			if ((softToggle || clickOnSteps) && physicsBypass) text = "";
-			else if (physicsBypass) text = "CBF";
+			if ((softToggle || clickOnSteps) && physicsBypass) text = "PB";
+			else if (physicsBypass) text = "CBF+PB";
 			else if (!clickOnSteps && !softToggle) text = "CBF";
 			else return;
 
