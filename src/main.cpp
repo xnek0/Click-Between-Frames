@@ -201,24 +201,24 @@ int calculateStepCount(double delta, float timewarp, bool forceVanilla) {
 		return std::round(std::max(1.0, ((delta * 60.0) / std::min(1.0f, timewarp)) * 4.0)); // not sure if this is different from `(delta * 240) / timewarp` bc of float precision
 	}
 	else if (legacyBypass) { // 2.1 physics bypass (same as vanilla 2.1)
-		return std::round(std::max(4.0, delta * 360.0) / std::min(1.0f, timewarp));
+		return std::round(std::max(4.0, delta * 480.0) / std::min(1.0f, timewarp));
 	}
 	else { // sorta just 2.2 + physics bypass but it doesnt allow below 240 steps/sec, also it smooths things out a bit when lagging
 		double animationInterval = CCDirector::sharedDirector()->getAnimationInterval();
 		averageDelta = (0.01 * delta) + (0.99 * averageDelta); // exponential moving average to detect lag/external fps caps
 		if (averageDelta > animationInterval * 10) averageDelta = animationInterval * 10; // dont let averageDelta get too high
 
-		bool laggingOneFrame = animationInterval < delta - (1.0 / 360.0); // more than 1 step of lag on a single frame
+		bool laggingOneFrame = animationInterval < delta - (1.0 / 480.0); // more than 1 step of lag on a single frame
 		bool laggingManyFrames = averageDelta - animationInterval > 0.0000001; // average lag is >0.5ms
 
 		if (!laggingOneFrame && !laggingManyFrames) { // no stepcount variance when not lagging
-			return std::round(std::ceil((animationInterval * 360.0) - 0.0001) / std::min(1.0f, timewarp));
+			return std::round(std::ceil((animationInterval * 480.0) - 0.0001) / std::min(1.0f, timewarp));
 		}
 		else if (!laggingOneFrame) { // consistently low fps
-			return std::round(std::ceil(averageDelta * 360.0) / std::min(1.0f, timewarp));
+			return std::round(std::ceil(averageDelta * 480.0) / std::min(1.0f, timewarp));
 		}
 		else { // need to catch up badly
-			return std::round(std::ceil(delta * 360.0) / std::min(1.0f, timewarp));
+			return std::round(std::ceil(delta * 480.0) / std::min(1.0f, timewarp));
 		}
 	}
 }
@@ -367,7 +367,7 @@ class $modify(GJBaseGameLayer) {
 	// getModifiedDelta is inlined, hook update directly instead
 	void update(float delta) {
 		if (this->m_started) {
-			float timewarp = std::max(this->m_gameState.m_timeWarp, 1.0f) / 240.0f;
+			float timewarp = std::max(this->m_gameState.m_timeWarp, 1.0f) / 480.0f;
 			calculateSteps(roundf((this->m_extraDelta + (m_resumeTimer <= 0 ? delta : 0.0)) / timewarp) * timewarp);
 		}
 
@@ -486,7 +486,7 @@ class $modify(PlayerObject) {
 		else PlayerObject::updateRotation(t);
 
 		if (physicsBypass && pl && !midStep) { // fix percent calculation with physics bypass on 2.2 levels
-			pl->m_gameState.m_currentProgress = static_cast<int>(pl->m_gameState.m_levelTime * 240.0);
+			pl->m_gameState.m_currentProgress = static_cast<int>(pl->m_gameState.m_levelTime * 480.0);
 		}
 	}
 
@@ -496,7 +496,7 @@ class $modify(PlayerObject) {
 
 		if (pl && (this == pl->m_player1 || this == pl->m_player2) && (physicsBypass || inputThisStep)) {
 			shipRotDelta = t;
-			PlayerObject::updateShipRotation(1.0/1024); // necessary to use a really small deltatime to get around an oversight in rob's math
+			PlayerObject::updateShipRotation(1.0/8192); // necessary to use a really small deltatime to get around an oversight in rob's math
 			shipRotDelta = 0.0f;
 		}
 		else PlayerObject::updateShipRotation(t);
