@@ -7,9 +7,9 @@
 		"ios": "2.2081"
 	},
 	"version": "v1.5.0",
-	"id": "syzzi.click_between_frames",
-	"name": "Click Between Frames",
-	"developer": "syzzi",
+	"id": "erdemych.click_between_frames",
+	"name": "CBF 360",
+	"developer": "erdemych",
 	"description": "Allows inputs to register between frames.",
 	"incompatibilities": {
 		"zmx.cbf-lite": ">=1.0.0"
@@ -105,7 +105,7 @@
 		}
 	},
 	"links": {
-		"source": "https://github.com/theyareonit/Click-Between-Frames"
+		"source": "https://t.me/erd3my4"
 	},
 	"resources": {
 		"files": [
